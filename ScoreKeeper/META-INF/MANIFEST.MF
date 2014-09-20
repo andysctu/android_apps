@@ -3,5 +3,3 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ScoreKeeper
 Bundle-SymbolicName: ScoreKeeper
 Bundle-Version: 1.0.0.qualifier
-Export-Package: android.support.v7.appcompat,
- com.example.scorekeeper

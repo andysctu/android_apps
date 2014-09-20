@@ -94,7 +94,7 @@ public class MainCanvas extends View {
 		// TODO Auto-generated method stub
 		
 		for (Circle item : myList) {
-			if (isTouchIn(event.x, event.y, item))
+			if (isTouchIn(event.getX(), event.getY(), item));
 		}
 		super.invalidate();
 		return true;

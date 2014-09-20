@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res/com.example.test4"
+    xmlns:app="http://schemas.android.com/apk/res/com.example.test4"
+    android:id="@+id/layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+
+    <SurfaceView
+        android:id="@+id/surfaceview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <TextView
+        android:id="@+id/distanceview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Yoyoyo"
+        android:layout_marginLeft="10dp" />
+
+    <EditText
+        android:id="@+id/heightview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/distanceview"
+        android:background="@android:color/transparent"
+        android:gravity="right"
+        android:hint="Height (cm)"
+        android:textColorHint="@color/green"
+        android:textSize="14dp"
+        android:layout_marginRight="10dp"
+        android:textColor="@color/green" />
+
+
+    <com.example.DistanceToLine.TargetLineView
+        android:id="@+id/line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent" />
+
+</RelativeLayout>
