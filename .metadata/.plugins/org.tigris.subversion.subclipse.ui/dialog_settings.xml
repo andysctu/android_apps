@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="538" key="RevertDialog.location.x"/>
+	<item value="2" key="ResourceSelectionTree.mode"/>
+	<item value="101" key="HistoryTableProvider.revisions.Revision"/>
+	<item value="80" key="RevertDialog.location.y"/>
+	<item value="252" key="HistoryTableProvider.revisions.Date"/>
+	<item value="https://ecesvn.uwaterloo.ca/courses/ece155/s14/groups/group-201-07/lab0-201-07" key="UrlCombo.Lab0_201_07.0"/>
+	<item value="201" key="HistoryTableProvider.revisionsBlock.Author"/>
+	<item value="525" key="RevertDialog.size.x"/>
+	<item value="101" key="HistoryTableProvider.revisionsBlock.Revision"/>
+	<item value="526" key="RevertDialog.size.y"/>
+	<item value="202" key="HistoryTableProvider.SVNHistoryPage.Date"/>
+	<item value="402" key="HistoryTableProvider.SVNHistoryPage.Comment"/>
+	<item value="102" key="HistoryTableProvider.MergeWizardUnblockRevisionsPage.Revision"/>
+	<item value="505" key="HistoryTableProvider.MergeWizardUnblockRevisionsPage.Comment"/>
+	<item value="201" key="HistoryTableProvider.revisions.Author"/>
+	<item value="81" key="HistoryTableProvider.SVNHistoryPage.Revision"/>
+	<item value="500" key="CommitDialog.weights.0"/>
+	<item value="500" key="CommitDialog.weights.1"/>
+	<item value="groups/group-201-07" key="DirectorySelectionPage.lastParent_https://ecesvn.uwaterloo.ca/courses/ece155/s14"/>
+	<item value="202" key="HistoryTableProvider.MergeWizardUnblockRevisionsPage.Author"/>
+	<item value="161" key="HistoryTableProvider.SVNHistoryPage.Author"/>
+	<item value="252" key="HistoryTableProvider.MergeWizardUnblockRevisionsPage.Date"/>
+	<item value="715" key="SwitchDialogWithConflictHandling.size.y"/>
+	<item value="606" key="SwitchDialogWithConflictHandling.size.x"/>
+	<item value="497" key="SwitchDialogWithConflictHandling.location.x"/>
+	<item value="0" key="SwitchDialogWithConflictHandling.location.y"/>
+	<item value="0" key="CommitDialog.location.y"/>
+	<item value="252" key="HistoryTableProvider.revisionsBlock.Date"/>
+	<item value="62" key="CommitDialog.location.x"/>
+	<item value="503" key="HistoryTableProvider.revisions.Comment"/>
+	<item value="https://ecesvn.uwaterloo.ca/courses/ece155/s14" key="RepositorySelectionPage.lastRepository"/>
+	<item value="1477" key="CommitDialog.size.x"/>
+	<item value="https://ecesvn.uwaterloo.ca/courses/ece155/s14/groups/group-201-07/lab1-201-07" key="UrlCombo.Lab1_201_07.0"/>
+	<item value="860" key="CommitDialog.size.y"/>
+	<item value="503" key="HistoryTableProvider.revisionsBlock.Comment"/>
+	<section name="CommitWizard">
+		<item value="false" key="ShowCompare"/>
+		<item value="500" key="VWeight2"/>
+		<item value="500" key="VWeight1"/>
+	</section>
+	<section name="NewLocationWizard">
+		<list key="ConfigurationWizardMainPage.STORE_URL_ID">
+			<item value="https://ecesvn.uwaterloo.ca/courses/ece155/s14"/>
+			<item value="https://ecesvn.uwaterloo.ca/courses/ece155/s13"/>
+		</list>
+	</section>
+</section>

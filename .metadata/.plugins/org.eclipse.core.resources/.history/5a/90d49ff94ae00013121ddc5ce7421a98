@@ -1,0 +1,291 @@
+package com.example.scorekeeper;
+
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+public class MainActivity extends ActionBarActivity {
+
+	private int p1, p2, remaining, difference;
+	private int numReds;
+	private boolean p1Turn, colorTurn, redsGone;
+	private int num[];
+
+	public static final int RED = 1;
+	public static final int YELLOW = 2;
+	public static final int GREEN = 3;
+	public static final int BROWN = 4;
+	public static final int BLUE = 5;
+	public static final int PINK = 6;
+	public static final int BLACK = 7;
+
+	ImageView red, yellow, green, brown, blue, pink, black;
+	TextView p1Points, p2Points, pointsRemaining, pointDifference, toShoot;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		if (savedInstanceState == null) {
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.container, new PlaceholderFragment()).commit();
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	/**
+	 * A placeholder fragment containing a simple view.
+	 */
+	public static class PlaceholderFragment extends Fragment {
+
+		public PlaceholderFragment() {
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.fragment_main, container,
+					false);
+			return rootView;
+		}
+	}
+
+	public void newGame(View v) {
+		p1 = 0;
+		p2 = 0;
+		num = new int[8];
+		num[0] = 15;
+		for (int i = 1; i < num.length; i++) {
+			num[i] = 1;
+		}
+		numReds = 15;
+		remaining = num[0] * (RED + BLACK) + 27;
+		p1Turn = true;
+		colorTurn = false;
+		redsGone = false;
+		setContentView(R.layout.game);
+		p1Points = (TextView) findViewById(R.id.p1Points);
+		p2Points = (TextView) findViewById(R.id.p2Points);
+		pointsRemaining = (TextView) findViewById(R.id.pointsRemaining);
+		pointDifference = (TextView) findViewById(R.id.pointDifference);
+		toShoot = (TextView) findViewById(R.id.toShoot);
+		toShoot.setText("<- To Shoot   ");
+
+		// red = (ImageView) findViewById(R.id.red);
+		// red.setImageResource(R.drawable.red);
+		//
+		// yellow = (ImageView) findViewById(R.id.yellow);
+		// yellow.setImageResource(R.drawable.red);
+
+		// red = (ImageView) findViewById(R.id.red);
+		// red.setImageResource(R.drawable.red);
+		//
+		// red = (ImageView) findViewById(R.id.red);
+		// red.setImageResource(R.drawable.red);
+		//
+		// red = (ImageView) findViewById(R.id.red);
+		// red.setImageResource(R.drawable.red);
+		//
+		// red = (ImageView) findViewById(R.id.red);
+		// red.setImageResource(R.drawable.red);
+		//
+		// red = (ImageView) findViewById(R.id.red);
+		// red.setImageResource(R.drawable.red);
+	}
+
+	public void addPoint(View v) {
+
+		int addPoints = 0;
+		switch (v.getId()) {
+		case (R.id.red):
+			if (numReds > 0 && num[0] > 0 && !colorTurn) {
+				addPoints = RED;
+				numReds--;
+				num[0]--;
+				colorTurn = true;
+			}
+			break;
+		case (R.id.yellow):
+			if (!colorTurn || num[1] <= 0) {
+				break;
+			}
+			if (redsGone) {
+				num[1]--;
+				addPoints = YELLOW;
+				colorTurn = true;
+				break;
+			}
+
+			addPoints = YELLOW;
+			colorTurn = false;
+			break;
+
+		case (R.id.green):
+			if (!colorTurn || num[2] <= 0) {
+				break;
+			}
+			if (redsGone) {
+				if (num[1] <= 0) {
+					num[2]--;
+					addPoints = GREEN;
+					colorTurn = true;
+					break;
+				} else {
+					break;
+				}
+			}
+			addPoints = GREEN;
+			colorTurn = false;
+			break;
+		case (R.id.brown):
+			if (!colorTurn || num[3] <= 0) {
+				break;
+			}
+			if (redsGone) {
+				if (num[2] <= 0) {
+					num[3]--;
+					addPoints = BROWN;
+					colorTurn = true;
+					break;
+				} else {
+					break;
+				}
+			}
+			addPoints = BROWN;
+			colorTurn = false;
+			break;
+		case (R.id.blue):
+			if (!colorTurn || num[4] <= 0) {
+				break;
+			}
+			if (redsGone) {
+				if (num[3] <= 0) {
+					num[4]--;
+					addPoints = BLUE;
+					colorTurn = true;
+					break;
+				} else {
+					break;
+				}
+			}
+			addPoints = BLUE;
+			colorTurn = false;
+			break;
+		case (R.id.pink):
+			if (!colorTurn || num[5] <= 0) {
+				break;
+			}
+			if (redsGone) {
+				if (num[4] <= 0) {
+					num[5]--;
+					addPoints = PINK;
+					colorTurn = true;
+					break;
+				} else {
+					break;
+				}
+			}
+			addPoints = PINK;
+			colorTurn = false;
+			break;
+		case (R.id.black):
+			if (!colorTurn || num[6] <= 0) {
+				break;
+			}
+			if (redsGone) {
+				if (num[5] <= 0) {
+					num[6]--;
+					addPoints = BLACK;
+					colorTurn = true;
+					break;
+				} else {
+					break;
+				}
+			}
+			addPoints = BLACK;
+			colorTurn = false;
+			break;
+		default:
+			break;
+		}
+		if (p1Turn) {
+			p1 += addPoints;
+			p1Points.setText(Integer.toString(p1));
+		} else {
+			p2 += addPoints;
+			p2Points.setText(Integer.toString(p2));
+		}
+
+		if (numReds <= 0 || num[0] <= 0) {
+			colorTurn = true;
+			redsGone = true;
+		}
+
+		if (colorTurn) {
+			remaining = (num[6] * BLACK) + numReds * (RED + BLACK)
+					+ (num[1] * YELLOW) + (num[2] * GREEN) + (num[3] * BROWN)
+					+ (num[4] * BLUE) + (num[5] * PINK) + (num[6] * BLACK);
+		} else {
+			remaining = numReds * (RED + BLACK) + 27;
+		}
+
+		pointsRemaining.setText(Integer.toString(remaining));
+
+		difference = Math.abs(p1 - p2);
+		pointDifference.setText(Integer.toString(difference));
+
+		if (remaining <= 0) {
+			setContentView(R.layout.game_over);
+		}
+
+	}
+
+	public void changeTurn(View v) {
+		if (p1Turn) {
+			p1Turn = false;
+
+			toShoot.setText("   To Shoot ->");
+		} else {
+			p1Turn = true;
+			colorTurn = false;
+			toShoot.setText("<- To Shoot   ");
+		}
+		if (redsGone) {
+			colorTurn = true;
+		}
+		else
+		{
+			colorTurn = false;
+		}
+		
+	}
+}

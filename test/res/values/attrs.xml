@@ -1,5 +1,0 @@
-<resources>
-   <declare-styleable name="myView">
-       <attr name="visible" format="boolean"  />
-   </declare-styleable>
-</resources>

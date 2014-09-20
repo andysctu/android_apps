@@ -1,0 +1,314 @@
+package ca.uwaterloo.Lab3_201_07;
+
+import java.util.Arrays;
+
+import android.content.pm.ActivityInfo;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public class MainActivity extends ActionBarActivity {
+
+	// TextViews for data
+	TextView accelData, recAccelData, magData, recMagData;
+
+	// Number of steps east, north, and total
+	static double east = 0, north = 0, stepcount = 0;
+	
+	// Arrays to store sensor data
+	float[] gravity, magnetic;
+
+	// Angle from North (radians), and calibration
+	float azimuth = 0, calibration = 0, prevAzimuth = 0;
+
+	LineGraphView accelGraph;
+	MapView mv;
+	NavigationalMap map;
+
+	// States for finite state machine
+	public static enum State {
+		state_down, state_rise, state_up, state_fall
+	}
+
+	State currentState = State.state_fall;
+	
+	// Step recognition boundaries
+	float MAX = 2.0f, MIN = -2.0f, UPPER_THRESHHOLD = 0.20f,
+			LOWER_THRESHHOLD = -0.10f;
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		mv.onCreateContextMenu(menu, v, menuInfo);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		return super.onContextItemSelected(item)
+				|| mv.onContextItemSelected(item);
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		if (savedInstanceState == null) {
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.container, new PlaceholderFragment()).commit();
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+		LinearLayout layout = (LinearLayout) findViewById(R.id.parent);
+		layout.setOrientation(LinearLayout.VERTICAL);
+
+		final Button button = (Button) findViewById(R.id.clearButton);
+		button.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Clear();
+			}
+		});
+		
+		final Button button2 = (Button) findViewById(R.id.calibrateButton);
+		button2.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Calibrate();
+			}
+		});
+
+		// Set up map
+		mv = new MapView(getApplicationContext(), 400, 300, 23, 23);
+		registerForContextMenu(mv);
+		map = MapLoader.loadMap(getExternalFilesDir(null),
+				"Lab-room-peninsula.svg");
+		mv.setMap(map);
+
+		// Set up graph
+		accelGraph = new LineGraphView(getApplicationContext(), 100,
+				Arrays.asList("x", "y", "z"));
+		accelGraph.setBackgroundColor(Color.BLACK);
+		accelGraph.setColor(Color.WHITE);
+		layout.addView(accelGraph);
+		accelGraph.setVisibility(View.VISIBLE);
+
+		// Create necessary TextViews
+		accelData = new TextView(getApplicationContext());
+		recAccelData = new TextView(getApplicationContext());
+		recAccelData.setTextColor(Color.GREEN);
+
+		magData = new TextView(getApplicationContext());
+		recMagData = new TextView(getApplicationContext());
+
+		layout.addView(recAccelData);
+		layout.addView(mv);
+		layout.setBackgroundColor(Color.BLACK);
+
+		// Implementing sensors
+		SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+		// acceleration
+		Sensor accelSensor = sensorManager
+				.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+		SensorEventListener accelListener = new AccelerationSensorEventListener(
+				accelData, recAccelData);
+		sensorManager.registerListener(accelListener, accelSensor,
+				SensorManager.SENSOR_DELAY_FASTEST);
+
+		// magnetic field
+		Sensor magFieldSensor = sensorManager
+				.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+		SensorEventListener magFieldListener = new MagneticFieldSensorEventListener(
+				magData, recMagData);
+		sensorManager.registerListener(magFieldListener, magFieldSensor,
+				SensorManager.SENSOR_DELAY_NORMAL);
+
+		return true;
+	}
+
+	// Classes for each sensor to handle events, record values, and to update
+	// TextViews
+	class AccelerationSensorEventListener implements SensorEventListener {
+		TextView outputTextView, recordTextView;
+		float smoothedAccel = 0;
+		float[] data = new float[3];
+		long lastStepTime = 0;
+
+		public AccelerationSensorEventListener(TextView accelerationView,
+				TextView recAccelerationView) {
+			outputTextView = accelerationView;
+			recordTextView = recAccelerationView;
+		}
+
+		public void FSM(float f) {
+			if (f > MAX || f < MIN) {
+				currentState = State.state_fall;
+				lastStepTime = System.currentTimeMillis();
+				return;
+			}
+			if (f < LOWER_THRESHHOLD && f > MIN
+					&& currentState == State.state_fall) {
+				currentState = State.state_down;
+			}
+			if (f > LOWER_THRESHHOLD && f < UPPER_THRESHHOLD
+					&& currentState == State.state_down) {
+				currentState = State.state_rise;
+			}
+			if (f > UPPER_THRESHHOLD && f < MAX
+					&& currentState == State.state_rise) {
+				currentState = State.state_up;
+
+			}
+			if (f > LOWER_THRESHHOLD && f < UPPER_THRESHHOLD
+					&& currentState == State.state_up) {
+				currentState = State.state_fall;
+				if (System.currentTimeMillis() - lastStepTime > 300) {
+					stepcount++;
+					east += Math.sin(azimuth);
+					north += Math.cos(azimuth);
+				}
+				lastStepTime = System.currentTimeMillis();
+			}
+		}
+
+		public void onAccuracyChanged(Sensor s, int i) {
+		}
+
+		public void onSensorChanged(SensorEvent se) {
+			if (se.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+				// TODO put se.values[0] somewhere useful
+				double x = se.values[0];
+				double y = se.values[1];
+				double z = se.values[2];
+
+				gravity = se.values;
+
+				data[0] = LOWER_THRESHHOLD;
+				data[1] = UPPER_THRESHHOLD;
+				smoothedAccel += (z - smoothedAccel) / 40;
+				smoothedAccel = smoothedAccel - 0.24f;
+				data[2] = smoothedAccel;
+				FSM(smoothedAccel);
+
+				accelGraph.addPoint(data);
+
+				if (gravity != null && magnetic != null) {
+					float R[] = new float[9];
+					float I[] = new float[9];
+					boolean success = SensorManager.getRotationMatrix(R, I,
+							gravity, magnetic);
+					if (success) {
+						float orientation[] = new float[3];
+						SensorManager.getOrientation(R, orientation);
+
+						if (prevAzimuth == 0)
+							prevAzimuth = orientation[0];
+						azimuth = ( (orientation[0] + prevAzimuth) / 2 ) + calibration; // orientation contains:
+						// azimuth, pitch and roll
+						prevAzimuth = azimuth;
+					}
+				}
+
+				String dataString = String
+						.format("Total Steps: %.0f\nAzimuth: %.2f\nSteps East: %.2f\nSteps North: %.2f",
+								stepcount, azimuth * (360 / (2 * 3.14159f)),
+								east, north);
+				recordTextView.setText(dataString);
+			}
+		}
+	}
+
+	class MagneticFieldSensorEventListener implements SensorEventListener {
+		TextView outputTextView, recordTextView;
+
+		public MagneticFieldSensorEventListener(TextView outputView,
+				TextView recOutputView) {
+			outputTextView = outputView;
+			recordTextView = recOutputView;
+		}
+
+		public void onAccuracyChanged(Sensor s, int i) {
+		}
+
+		public void onSensorChanged(SensorEvent se) {
+			if (se.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+				// TODO put se.values[0] somewhere useful
+				double x = se.values[0];
+				double y = se.values[1];
+				double z = se.values[2];
+
+				magnetic = se.values;
+			}
+		}
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	// Clears graph and resets values
+	public void Clear() {
+		accelGraph.purge();
+		stepcount = 0;
+		east = 0;
+		north = 0;
+		calibration = 0;
+		currentState = State.state_fall;
+	}
+	
+	// Calibrate to north
+	public void Calibrate() {
+		calibration = -azimuth;
+	}
+
+	/**
+	 * A placeholder fragment containing a simple view.
+	 */
+	public static class PlaceholderFragment extends Fragment {
+
+		public PlaceholderFragment() {
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.fragment_main, container,
+					false);
+			return rootView;
+		}
+	}
+
+}
