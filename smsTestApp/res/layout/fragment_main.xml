@@ -1,0 +1,73 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="com.example.smstestapp.MainActivity$PlaceholderFragment" >
+
+    <TextView
+        android:id="@+id/textViewMyNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="My Phone Number : "
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <EditText
+        android:id="@+id/editTextPhoneNo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="Change Number?"
+        android:phoneNumber="true" >
+
+    </EditText>
+
+    <TextView
+        android:id="@+id/textViewMyName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="My Name : "
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <EditText
+        android:id="@+id/editTextMyName"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:hint="Change Name?" />
+
+    <Button
+        android:id="@+id/buttonSend"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Send" />
+
+    <Button
+        android:id="@+id/buttonSetName"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Change Name/Number" />
+
+    <EditText
+        android:id="@+id/friendNum"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Send to Whom?"
+        android:phoneNumber="true" />
+
+    <EditText
+        android:id="@+id/message"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="top"
+        android:hint="Enter Message" />
+
+    <Button
+        android:id="@+id/playButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Play" />
+
+</LinearLayout>

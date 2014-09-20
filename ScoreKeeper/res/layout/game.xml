@@ -1,0 +1,169 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.scorekeeper.MainActivity$PlaceholderFragment" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="Player 1"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView1"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="Player 2"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/toShoot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:text="  To Shoot  "
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:onClick="changeTurn"
+        android:clickable="true" />
+
+    <TextView
+        android:id="@+id/pointsRemaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/pointsRemainingTitle"
+        android:layout_alignBottom="@+id/pointsRemainingTitle"
+        android:layout_alignParentRight="true"
+        android:text="147"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/pointDifference"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/pointDifferenceTitle"
+        android:layout_alignParentRight="true"
+        android:text="0"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/pointDifferenceTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/pointsRemainingTitle"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="121dp"
+        android:text="Point Difference: "
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/pointsRemainingTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/pointDifference"
+        android:layout_alignLeft="@+id/textView1"
+        android:text="Points Remaining: "
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/pointDifference" >
+
+        <ImageView
+            android:id="@+id/red"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="23dp"
+            android:layout_weight="1"
+            android:onClick="addPoint"
+            android:src="@drawable/red" />
+
+        <ImageView
+            android:id="@+id/yellow"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="23dp"
+            android:layout_weight="1"
+            android:onClick="addPoint"
+            android:src="@drawable/yellow" />
+
+        <ImageView
+            android:id="@+id/green"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="23dp"
+            android:layout_weight="1"
+            android:onClick="addPoint"
+            android:src="@drawable/green" />
+
+        <ImageView
+            android:id="@+id/brown"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="23dp"
+            android:layout_weight="1"
+            android:onClick="addPoint"
+            android:src="@drawable/brown" />
+
+        <ImageView
+            android:id="@+id/blue"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="23dp"
+            android:layout_weight="1"
+            android:onClick="addPoint"
+            android:src="@drawable/blue" />
+
+        <ImageView
+            android:id="@+id/pink"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="23dp"
+            android:layout_weight="1"
+            android:onClick="addPoint"
+            android:src="@drawable/pink" />
+
+        <ImageView
+            android:id="@+id/black"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="23dp"
+            android:layout_weight="1"
+            android:onClick="addPoint"
+            android:src="@drawable/black" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/p1Points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/textView1"
+        android:layout_marginTop="16dp"
+        android:text="0"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/p2Points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_below="@+id/textView2"
+        android:layout_marginTop="16dp"
+        android:text="0"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+</RelativeLayout>

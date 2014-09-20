@@ -1,0 +1,405 @@
+package ca.uwaterloo.Lab1_201_07;
+
+import java.util.Arrays;
+
+//import ca.uwaterloo.Lab1_201_07.R;
+
+import android.content.pm.ActivityInfo;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public class MainActivity extends ActionBarActivity {
+
+	// TextViews for titles and for data
+	TextView lightTitle, lightData, recLightTitle, recLightData, accelTitle, accelData, recAccelTitle, recAccelData, 
+	magTitle, magData, recMagTitle, recMagData, rotTitle, rotData, recRotTitle, recRotData;
+	
+	// Variables to store record data
+	double lightMax, accelMaxX, accelMaxY, accelMaxZ, magMaxX, magMaxY, magMaxZ, rotMaxX, rotMaxY, rotMaxZ;
+	
+	LineGraphView accelGraph;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		if (savedInstanceState == null) {
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.container, new PlaceholderFragment()).commit();
+		}
+
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+		LinearLayout layout = (LinearLayout) findViewById(R.id.parent);
+		layout.setOrientation(LinearLayout.VERTICAL);
+
+		 final Button button = (Button) findViewById(R.id.clearButton);
+         button.setOnClickListener(new View.OnClickListener() {
+             public void onClick(View v) {
+                 Clear();
+             }
+         });
+		
+        // Set up graph
+		accelGraph = new LineGraphView(getApplicationContext(), 100,
+				Arrays.asList("x", "y", "z"));
+		accelGraph.setBackgroundColor(Color.BLACK);
+		accelGraph.setColor(Color.WHITE);	
+		layout.addView(accelGraph);
+		accelGraph.setVisibility(View.VISIBLE);
+		
+		// Initialize record data to 0
+		lightMax = 0;
+		
+		accelMaxX = 0;
+		accelMaxY = 0;
+		accelMaxZ = 0;
+		
+		magMaxX = 0;
+		magMaxY = 0;
+		magMaxZ = 0;
+		
+		rotMaxX = 0;
+		rotMaxY = 0;
+		rotMaxZ = 0;
+		
+		// Create necessary TextViews
+		lightTitle = new TextView(getApplicationContext());
+		lightTitle.setText("Light Intensity (lx)");
+
+		lightData = new TextView(getApplicationContext());
+		
+		recLightTitle = new TextView(getApplicationContext());
+		recLightTitle.setText("Record Light Intensity (lx)");
+		
+		recLightData = new TextView(getApplicationContext());
+
+		accelTitle = new TextView(getApplicationContext());
+		accelTitle.setText("Acceleration [Linear] (m/s^2)");
+
+		accelData = new TextView(getApplicationContext());
+
+		recAccelTitle = new TextView(getApplicationContext());
+		recAccelTitle.setText("Record Acceleration [Linear] (m/s^2)");
+
+		recAccelData = new TextView(getApplicationContext());
+
+		magTitle = new TextView(getApplicationContext());
+		magTitle.setText("Magnetic Field (uT)");
+
+		magData = new TextView(getApplicationContext());
+
+		recMagTitle = new TextView(getApplicationContext());
+		recMagTitle.setText("Record Magnetic Field (uT)");
+		
+		recMagData = new TextView(getApplicationContext());
+		
+		rotTitle = new TextView(getApplicationContext());
+		rotTitle.setText("Rotation Vector");
+
+		rotData = new TextView(getApplicationContext());
+
+		recRotTitle = new TextView(getApplicationContext());
+		recRotTitle.setText("Record Rotation Vector");
+		
+		recRotData = new TextView(getApplicationContext());
+
+		layout.addView(lightTitle);
+		layout.addView(lightData);
+		layout.addView(recLightTitle);
+		layout.addView(recLightData);
+
+		layout.addView(accelTitle);
+		layout.addView(accelData);
+		layout.addView(recAccelTitle);
+		layout.addView(recAccelData);
+
+		layout.addView(magTitle);
+		layout.addView(magData);
+		layout.addView(recMagTitle);
+		layout.addView(recMagData);
+
+		layout.addView(rotTitle);
+		layout.addView(rotData);
+		layout.addView(recRotTitle);
+		layout.addView(recRotData);
+		
+		layout.setBackgroundColor(Color.BLACK);
+		
+		// Implementing sensors
+		// light
+		SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+		Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+
+		SensorEventListener lightListener = new LightSensorEventListener(
+				lightData, recLightData);
+		sensorManager.registerListener(lightListener, lightSensor,
+				SensorManager.SENSOR_DELAY_NORMAL);
+
+		// acceleration
+		Sensor accelSensor = sensorManager
+				.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+		SensorEventListener accelListener = new AccelerationSensorEventListener(
+				accelData, recAccelData);
+		sensorManager.registerListener(accelListener, accelSensor,
+				SensorManager.SENSOR_DELAY_FASTEST);
+
+		// magnetic field
+		Sensor magFieldSensor = sensorManager
+				.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+		SensorEventListener magFieldListener = new MagneticFieldSensorEventListener(
+				magData, recMagData);
+		sensorManager.registerListener(magFieldListener, magFieldSensor,
+				SensorManager.SENSOR_DELAY_NORMAL);
+
+		// rotation
+		Sensor rotSensor = sensorManager
+				.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+
+		SensorEventListener rotListener = new RotationSensorEventListener(
+				rotData, recRotData);
+		sensorManager.registerListener(rotListener, rotSensor,
+				SensorManager.SENSOR_DELAY_NORMAL);
+
+		return true;
+	}
+
+	
+	// Classes for each sensor to handle events, record values, and to update TextViews
+	class AccelerationSensorEventListener implements SensorEventListener {
+		TextView outputTextView, recordTextView;
+
+		public AccelerationSensorEventListener(TextView accelerationView, TextView recAccelerationView) {
+			outputTextView = accelerationView;
+			recordTextView = recAccelerationView;
+		}
+
+		public void onAccuracyChanged(Sensor s, int i) {
+		}
+
+		public void onSensorChanged(SensorEvent se) {
+			if (se.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+				// TODO put se.values[0] somewhere useful
+				double x = se.values[0];
+				double y = se.values[1];
+				double z = se.values[2];
+
+				String dataString = String.format(
+						" x: %.2f\n y: %.2f\n z: %.2f", x, y, z);
+				outputTextView.setText(dataString);
+
+				if ( Math.abs(x) > Math.abs(accelMaxX) )
+				{
+					accelMaxX = x;
+				}
+				if ( Math.abs(y) > Math.abs(accelMaxY) )
+				{
+					accelMaxY = y;
+				}
+				if ( Math.abs(z) > Math.abs(accelMaxZ) )
+				{
+					accelMaxZ = z;
+				}
+				
+				dataString = String.format( " x: %.2f\n y: %.2f\n z: %.2f", accelMaxX, accelMaxY, accelMaxZ);
+				recordTextView.setText(dataString);
+				
+				accelGraph.addPoint(se.values);
+			}
+		}
+
+	}
+
+	class MagneticFieldSensorEventListener implements SensorEventListener {
+		TextView outputTextView, recordTextView;
+
+		public MagneticFieldSensorEventListener(TextView outputView, TextView recOutputView) {
+			outputTextView = outputView;
+			recordTextView = recOutputView;
+		}
+
+		public void onAccuracyChanged(Sensor s, int i) {
+		}
+
+		public void onSensorChanged(SensorEvent se) {
+			if (se.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+				// TODO put se.values[0] somewhere useful
+				double x = se.values[0];
+				double y = se.values[1];
+				double z = se.values[2];
+
+				String dataString = String.format(
+						" x: %.2f\n y: %.2f\n z: %.2f", x, y, z);
+				outputTextView.setText(dataString);
+				
+				if ( Math.abs(x) > Math.abs(magMaxX) )
+				{
+					magMaxX = x;
+				}
+				if ( Math.abs(y) > Math.abs(magMaxY) )
+				{
+					magMaxY = y;
+				}
+				if ( Math.abs(z) > Math.abs(magMaxZ) )
+				{
+					magMaxZ = z;
+				}
+				
+				dataString = String.format( " x: %.2f\n y: %.2f\n z: %.2f", magMaxX, magMaxY, magMaxZ);
+				recordTextView.setText(dataString);
+			
+
+			}
+		}
+
+	}
+
+	class RotationSensorEventListener implements SensorEventListener {
+		TextView outputTextView, recordTextView;
+
+		public RotationSensorEventListener(TextView outputView, TextView recOutputView) {
+			outputTextView = outputView;
+			recordTextView = recOutputView;
+		}
+
+		public void onAccuracyChanged(Sensor s, int i) {
+		}
+
+		public void onSensorChanged(SensorEvent se) {
+			if (se.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+				// TODO put se.values[0] somewhere useful
+				double x = se.values[0];
+				double y = se.values[1];
+				double z = se.values[2];
+
+				String dataString = String.format( "x: %.2f\n y: %.2f\n z: %.2f", x, y, z);
+				outputTextView.setText(dataString);
+				
+				if ( Math.abs(x) > Math.abs(rotMaxX) )
+				{
+					rotMaxX = x;
+				}
+				if ( Math.abs(y) > Math.abs(rotMaxY) )
+				{
+					rotMaxY = y;
+				}
+				if ( Math.abs(z) > Math.abs(rotMaxZ) )
+				{
+					rotMaxZ = z;
+				}
+				
+				dataString = String.format( " x: %.2f\n y: %.2f\n z: %.2f", rotMaxX, rotMaxY, rotMaxZ);
+				recordTextView.setText(dataString);
+			
+
+			}
+		}
+	}
+
+	class LightSensorEventListener implements SensorEventListener {
+		TextView outputTextView, recordTextView;
+
+		public LightSensorEventListener(TextView outputView, TextView recOutputView) {
+			outputTextView = outputView;
+			recordTextView = recOutputView;
+		}
+
+		public void onAccuracyChanged(Sensor s, int i) {
+		}
+
+		public void onSensorChanged(SensorEvent se) {
+			if (se.sensor.getType() == Sensor.TYPE_LIGHT) {
+				// TODO put se.values[0] somewhere useful
+				double data = se.values[0];
+
+				String dataString = String.format(" %.2f", data);
+				outputTextView.setText(dataString);
+				
+				if (Math.abs(data) > Math.abs(lightMax))
+				{ 
+					lightMax = data;
+				}
+				
+				dataString = String.format( "%.2f", lightMax);
+				recordTextView.setText(dataString);
+
+
+			}
+		}
+
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	// Clears graph and resets max values
+	public void Clear()
+	{
+		accelMaxX = 0;
+		accelMaxY = 0;
+		accelMaxZ = 0;
+		accelGraph.purge();
+		
+		magMaxX = 0;
+		magMaxY = 0;
+		magMaxZ = 0;
+		
+		lightMax = 0;
+		
+		rotMaxX = 0;
+		rotMaxY = 0;
+		rotMaxZ = 0;
+	}
+	/**
+	 * A placeholder fragment containing a simple view.
+	 */
+	public static class PlaceholderFragment extends Fragment {
+
+		public PlaceholderFragment() {
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.fragment_main, container,
+					false);
+			return rootView;
+		}
+	}
+
+}
